@@ -3,6 +3,8 @@ pragma Singleton
 import qs.config
 import Quickshell
 import Quickshell.Services.Pipewire
+import QtQuick
+import Quickshell.Io
 
 Singleton {
     id: root
@@ -50,6 +52,15 @@ Singleton {
 
     function setAudioSource(newSource: PwNode): void {
         Pipewire.preferredDefaultAudioSource = newSource;
+    }
+
+    function toggleAudioPort(isHeadphonesIconState: bool): void {
+        const speakers = "analog-output-lineout";
+        const headphones = "analog-output-headphones";
+
+        const newPort = isHeadphonesIconState ? speakers : headphones;
+
+        Quickshell.execDetached(["pactl", "set-sink-port", "@DEFAULT_SINK@", newPort]);
     }
 
     PwObjectTracker {

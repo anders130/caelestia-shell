@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 
 import qs.components
+import qs.components.controls
 import qs.services
 import qs.utils
 import qs.config
@@ -14,6 +15,7 @@ Item {
     id: root
 
     property color colour: Colours.palette.m3secondary
+    property bool isHeadphonesIcon: false
 
     readonly property list<var> hoverAreas: [
         {
@@ -60,6 +62,36 @@ Item {
                 animate: true
                 text: Icons.getVolumeIcon(Audio.volume, Audio.muted)
                 color: root.colour
+            }
+        }
+
+        // Audio switcher
+        Loader {
+            id: audioSwitcher
+
+            Layout.alignment: Qt.AlignHCenter
+            asynchronous: true
+            active: Config.bar.status.showAudioSwitcher
+            visible: active
+
+            sourceComponent: CustomMouseArea {
+                id: audioSwitcherArea
+
+                implicitWidth: icon.implicitWidth
+                implicitHeight: icon.implicitHeight
+
+                onClicked: {
+                    Audio.toggleAudioPort(root.isHeadphonesIcon);
+                    root.isHeadphonesIcon = !root.isHeadphonesIcon;
+                }
+
+                MaterialIcon {
+                    id: icon
+                    anchors.centerIn: parent
+                    animate: true
+                    text: root.isHeadphonesIcon ? "headphones" : "speaker"
+                    color: root.colour
+                }
             }
         }
 
