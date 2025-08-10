@@ -15,7 +15,6 @@ Item {
     id: root
 
     property color colour: Colours.palette.m3secondary
-    property bool isHeadphonesIcon: false
 
     readonly property list<var> hoverAreas: [
         {
@@ -80,16 +79,13 @@ Item {
                 implicitWidth: icon.implicitWidth
                 implicitHeight: icon.implicitHeight
 
-                onClicked: {
-                    Audio.toggleAudioPort(root.isHeadphonesIcon);
-                    root.isHeadphonesIcon = !root.isHeadphonesIcon;
-                }
+                onClicked: Audio.toggleAudioPort()
 
                 MaterialIcon {
                     id: icon
                     anchors.centerIn: parent
                     animate: true
-                    text: root.isHeadphonesIcon ? "headphones" : "speaker"
+                    text: Audio.isHeadphonesIcon ? "headphones" : "speaker"
                     color: root.colour
                 }
             }

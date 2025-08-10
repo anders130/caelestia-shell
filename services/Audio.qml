@@ -54,11 +54,14 @@ Singleton {
         Pipewire.preferredDefaultAudioSource = newSource;
     }
 
-    function toggleAudioPort(isHeadphonesIconState: bool): void {
+    property bool isHeadphonesIcon: false
+
+    function toggleAudioPort(): void {
         const speakers = "analog-output-lineout";
         const headphones = "analog-output-headphones";
 
-        const newPort = isHeadphonesIconState ? speakers : headphones;
+        const newPort = root.isHeadphonesIcon ? speakers : headphones;
+        root.isHeadphonesIcon = !root.isHeadphonesIcon;
 
         Quickshell.execDetached(["pactl", "set-sink-port", "@DEFAULT_SINK@", newPort]);
     }
