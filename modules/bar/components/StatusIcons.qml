@@ -111,23 +111,20 @@ StyledRect {
             active: Config.bar.status.showAudio
 
             sourceComponent: CustomMouseArea {
-                id: audioSwitcherArea
+                id: audioArea
 
                 implicitWidth: icon.implicitWidth
                 implicitHeight: icon.implicitHeight
 
                 hoverEnabled: false
 
-                onClicked: {
-                    Audio.toggleAudioPort(root.isHeadphonesIcon);
-                    root.isHeadphonesIcon = !root.isHeadphonesIcon;
-                }
+                onClicked: Audio.toggleAudioPort()
 
                 MaterialIcon {
                     id: icon
                     anchors.centerIn: parent
                     animate: true
-                    text: root.isHeadphonesIcon ? "headphones" : "speaker"
+                    text: Audio.isHeadphonesIcon ? "headphones" : "speaker"
                     color: root.colour
                 }
             }
