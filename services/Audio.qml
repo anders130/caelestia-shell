@@ -9,6 +9,24 @@ import Quickshell.Io
 Singleton {
     id: root
 
+    Process {
+        id: audioPortProcess
+        command: ["pactl", "list", "sinks"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                if (text.includes("Active Port: analog-output-headphones")) {
+                    isHeadphonesIcon = true;
+                } else if (text.includes("Active Port: analog-output-lineout")) {
+                    isHeadphonesIcon = false;
+                }
+            }
+        }
+    }
+
+    function init() {
+        audioPortProcess.running = true;
+    }
+
     readonly property var nodes: Pipewire.nodes.values.reduce((acc, node) => {
         if (!node.isStream) {
             if (node.isSink)
@@ -69,4 +87,6 @@ Singleton {
     PwObjectTracker {
         objects: [...root.sinks, ...root.sources]
     }
+
+    Component.onCompleted: init()
 }
