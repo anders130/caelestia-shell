@@ -77,6 +77,19 @@ Singleton {
         setAudioSink(sinks[nextIndex]);
     }
 
+    property bool isHeadphonesIcon: false
+
+    function toggleAudioPort(): void {
+        const speakers = "analog-output-lineout";
+        const headphones = "analog-output-headphones";
+
+        const newPort = root.isHeadphonesIcon ? speakers : headphones;
+        root.isHeadphonesIcon = !root.isHeadphonesIcon;
+
+        Quickshell.execDetached(["pactl", "set-sink-port", "@DEFAULT_SINK@", newPort]);
+    }
+
+
     function setStreamVolume(stream: PwNode, newVolume: real): void {
         if (stream?.ready && stream?.audio) {
             stream.audio.muted = false;

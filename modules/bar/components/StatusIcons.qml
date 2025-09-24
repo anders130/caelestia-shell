@@ -5,6 +5,7 @@ import QtQuick.Layouts
 import Quickshell
 import Caelestia.Config
 import qs.components
+import qs.components.controls
 import qs.services
 import qs.utils
 import qs.modules.bar.components.status
@@ -81,12 +82,26 @@ StyledRect {
                     delegate: EntryWrapper {
                         margin: Tokens.spacing.extraSmall / 2
 
-                        MaterialIcon {
-                            animate: true
-                            text: Icons.getVolumeIcon(Audio.volume, Audio.muted)
-                            color: root.colour
-                            fontStyle: Tokens.font.icon.medium
-                            fill: 1
+                        CustomMouseArea {
+                            implicitWidth: audioIcon.implicitWidth
+                            implicitHeight: audioIcon.implicitHeight
+
+                            hoverEnabled: false
+
+                            onClicked: {
+                                Audio.toggleAudioPort()
+                            }
+
+                            MaterialIcon {
+                                id: audioIcon
+
+                                anchors.centerIn: parent
+                                animate: true
+                                text: Audio.isHeadphonesIcon ? "headphones" : "speaker"
+                                color: root.colour
+                                fontStyle: Tokens.font.icon.medium
+                                fill: 1
+                            }
                         }
                     }
                 }
