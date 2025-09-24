@@ -6,12 +6,31 @@ import Caelestia
 import Quickshell
 import Quickshell.Services.Pipewire
 import QtQuick
+import Quickshell.Io
 
 Singleton {
     id: root
 
+    Process {
+        id: audioPortProcess
+        command: ["pactl", "list", "sinks"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                if (text.includes("Active Port: analog-output-headphones")) {
+                    isHeadphonesIcon = true;
+                } else if (text.includes("Active Port: analog-output-lineout")) {
+                    isHeadphonesIcon = false;
+                }
+            }
+        }
+    }
+
     property string previousSinkName: ""
     property string previousSourceName: ""
+
+    function init() {
+        audioPortProcess.running = true;
+    }
 
     readonly property var nodes: Pipewire.nodes.values.reduce((acc, node) => {
         if (!node.isStream) {
@@ -118,6 +137,7 @@ Singleton {
     Component.onCompleted: {
         previousSinkName = sink?.description || sink?.name || qsTr("Unknown Device");
         previousSourceName = source?.description || source?.name || qsTr("Unknown Device");
+        init();
     }
 
     PwObjectTracker {
