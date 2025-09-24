@@ -11,26 +11,9 @@ import Quickshell.Io
 Singleton {
     id: root
 
-    Process {
-        id: audioPortProcess
-        command: ["pactl", "list", "sinks"]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                if (text.includes("Active Port: analog-output-headphones")) {
-                    isHeadphonesIcon = true;
-                } else if (text.includes("Active Port: analog-output-lineout")) {
-                    isHeadphonesIcon = false;
-                }
-            }
-        }
-    }
-
     property string previousSinkName: ""
     property string previousSourceName: ""
-
-    function init() {
-        audioPortProcess.running = true;
-    }
+    property bool isHeadphonesIcon: false
 
     readonly property var nodes: Pipewire.nodes.values.reduce((acc, node) => {
         if (!node.isStream) {
@@ -98,8 +81,6 @@ Singleton {
         Pipewire.preferredDefaultAudioSource = newSource;
     }
 
-    property bool isHeadphonesIcon: false
-
     function toggleAudioPort(): void {
         const speakers = "analog-output-lineout";
         const headphones = "analog-output-headphones";
@@ -134,10 +115,24 @@ Singleton {
         previousSourceName = newSourceName;
     }
 
+    Process {
+        id: audioPortProcess
+        command: ["pactl", "list", "sinks"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                if (text.includes("Active Port: analog-output-headphones")) {
+                    isHeadphonesIcon = true;
+                } else if (text.includes("Active Port: analog-output-lineout")) {
+                    isHeadphonesIcon = false;
+                }
+            }
+        }
+    }
+
     Component.onCompleted: {
         previousSinkName = sink?.description || sink?.name || qsTr("Unknown Device");
         previousSourceName = source?.description || source?.name || qsTr("Unknown Device");
-        init();
+        audioPortProcess.running = true;
     }
 
     PwObjectTracker {
