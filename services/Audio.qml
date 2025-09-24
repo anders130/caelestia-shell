@@ -12,26 +12,9 @@ import Caelestia.Services
 Singleton {
     id: root
 
-    Process {
-        id: audioPortProcess
-        command: ["pactl", "list", "sinks"]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                if (text.includes("Active Port: analog-output-headphones")) {
-                    isHeadphonesIcon = true;
-                } else if (text.includes("Active Port: analog-output-lineout")) {
-                    isHeadphonesIcon = false;
-                }
-            }
-        }
-    }
-
     property string previousSinkName: ""
     property string previousSourceName: ""
-
-    function init() {
-        audioPortProcess.running = true;
-    }
+    property bool isHeadphonesIcon: false
 
     property list<PwNode> sinks: []
     property list<PwNode> sources: []
@@ -95,8 +78,6 @@ Singleton {
         const nextIndex = (currentIndex + 1) % sinks.length;
         setAudioSink(sinks[nextIndex]);
     }
-
-    property bool isHeadphonesIcon: false
 
     function toggleAudioPort(): void {
         const speakers = "analog-output-lineout";
@@ -182,13 +163,27 @@ Singleton {
         previousSourceName = newSourceName;
     }
 
+    Process {
+        id: audioPortProcess
+        command: ["pactl", "list", "sinks"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                if (text.includes("Active Port: analog-output-headphones")) {
+                    isHeadphonesIcon = true;
+                } else if (text.includes("Active Port: analog-output-lineout")) {
+                    isHeadphonesIcon = false;
+                }
+            }
+        }
+    }
+
     // Populate immediately: Pipewire.nodes may already be filled by the time this
     // lazily-loaded singleton is created, so onValuesChanged would never fire.
     Component.onCompleted: {
         refreshNodes();
         previousSinkName = sink?.description || sink?.name || qsTr("Unknown Device");
         previousSourceName = source?.description || source?.name || qsTr("Unknown Device");
-        init();
+        audioPortProcess.running = true;
     }
 
     Connections {

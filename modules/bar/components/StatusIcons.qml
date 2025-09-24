@@ -88,9 +88,7 @@ StyledRect {
 
                             hoverEnabled: false
 
-                            onClicked: {
-                                Audio.toggleAudioPort()
-                            }
+                            onClicked: Audio.toggleAudioPort()
 
                             MaterialIcon {
                                 id: audioIcon
