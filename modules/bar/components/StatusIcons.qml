@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 
 import qs.components
+import qs.components.controls
 import qs.services
 import qs.utils
 import qs.config
@@ -15,6 +16,7 @@ StyledRect {
 
     property color colour: Colours.palette.m3secondary
     readonly property alias items: iconColumn
+    property bool isHeadphonesIcon: false
 
     color: Colours.tPalette.m3surfaceContainer
     radius: Appearance.rounding.full
@@ -108,10 +110,25 @@ StyledRect {
             name: "audio"
             active: Config.bar.status.showAudio
 
-            sourceComponent: MaterialIcon {
-                animate: true
-                text: Icons.getVolumeIcon(Audio.volume, Audio.muted)
-                color: root.colour
+            sourceComponent: CustomMouseArea {
+                id: audioArea
+
+                implicitWidth: icon.implicitWidth
+                implicitHeight: icon.implicitHeight
+
+                hoverEnabled: false
+
+                onClicked: {
+                    Audio.toggleAudioPort()
+                }
+
+                MaterialIcon {
+                    id: icon
+                    anchors.centerIn: parent
+                    animate: true
+                    text: Audio.isHeadphonesIcon ? "headphones" : "speaker"
+                    color: root.colour
+                }
             }
         }
 
