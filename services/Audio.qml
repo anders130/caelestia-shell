@@ -80,13 +80,28 @@ Singleton {
     }
 
     function toggleAudioPort(): void {
-        const speakers = "analog-output-lineout";
-        const headphones = "analog-output-headphones";
+        if (sinks.length < 2)
+            return;
 
-        const newPort = root.isHeadphonesIcon ? speakers : headphones;
-        root.isHeadphonesIcon = !root.isHeadphonesIcon;
+        let currentSinkIndex = -1;
+        for (let i = 0; i < sinks.length; i++) {
+            if (sinks[i].id === sink.id) {
+                currentSinkIndex = i;
+                break;
+            }
+        }
 
-        Quickshell.execDetached(["pactl", "set-sink-port", "@DEFAULT_SINK@", newPort]);
+        if (currentSinkIndex > -1) {
+            const nextSinkIndex = (currentSinkIndex + 1) % sinks.length;
+            setAudioSink(sinks[nextSinkIndex]);
+        } else if (sinks.length > 0) {
+            setAudioSink(sinks[0]);
+        }
+    }
+
+    function updateHeadphonesIconState(): void {
+        const sinkName = (sink?.description || sink?.name || "").toLowerCase();
+        isHeadphonesIcon = sinkName.includes("headphone") || sinkName.includes("headset");
     }
 
 
@@ -144,11 +159,13 @@ Singleton {
             return;
 
         const newSinkName = sink.description || sink.name || qsTr("Unknown Device");
+        const newSinkNameLower = (sink.description || sink.name || "").toLowerCase();
 
         if (previousSinkName && previousSinkName !== newSinkName && GlobalConfig.utilities.toasts.audioOutputChanged)
             Toaster.toast(qsTr("Audio output changed"), qsTr("Now using: %1").arg(newSinkName), "volume_up");
 
         previousSinkName = newSinkName;
+        updateHeadphonesIconState();
     }
 
     onSourceChanged: {
@@ -163,18 +180,8 @@ Singleton {
         previousSourceName = newSourceName;
     }
 
-    Process {
-        id: audioPortProcess
-        command: ["pactl", "list", "sinks"]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                if (text.includes("Active Port: analog-output-headphones")) {
-                    isHeadphonesIcon = true;
-                } else if (text.includes("Active Port: analog-output-lineout")) {
-                    isHeadphonesIcon = false;
-                }
-            }
-        }
+    onNodesChanged: {
+        updateHeadphonesIconState();
     }
 
     // Populate immediately: Pipewire.nodes may already be filled by the time this
@@ -183,7 +190,6 @@ Singleton {
         refreshNodes();
         previousSinkName = sink?.description || sink?.name || qsTr("Unknown Device");
         previousSourceName = source?.description || source?.name || qsTr("Unknown Device");
-        audioPortProcess.running = true;
     }
 
     Connections {
