@@ -15,7 +15,7 @@ Item {
 
     readonly property int maxHeight: {
         const otherModules = bar.children.filter(c => c.id && c.item !== this && c.id !== "spacer");
-        const otherHeight = otherModules.reduce((acc, curr) => acc + curr.height, 0);
+        const otherHeight = otherModules.reduce((acc, curr) => acc + (curr.item.nonAnimHeight ?? curr.height), 0);
         // Length - 2 cause repeater counts as a child
         return bar.height - otherHeight - bar.spacing * (bar.children.length - 1) - bar.vPadding * 2;
     }
@@ -62,7 +62,8 @@ Item {
 
     Behavior on implicitHeight {
         Anim {
-            easing.bezierCurve: Appearance.anim.curves.emphasized
+            duration: Appearance.anim.durations.expressiveDefaultSpatial
+            easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
         }
     }
 
@@ -78,11 +79,16 @@ Item {
         color: root.colour
         opacity: root.current === this ? 1 : 0
 
-        transform: Rotation {
-            angle: 90
-            origin.x: text.implicitHeight / 2
-            origin.y: text.implicitHeight / 2
-        }
+        transform: [
+            Translate {
+                x: Config.bar.activeWindow.inverted ? -implicitWidth + text.implicitHeight : 0
+            },
+            Rotation {
+                angle: Config.bar.activeWindow.inverted ? 270 : 90
+                origin.x: text.implicitHeight / 2
+                origin.y: text.implicitHeight / 2
+            }
+        ]
 
         width: implicitHeight
         height: implicitWidth
