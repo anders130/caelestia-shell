@@ -159,7 +159,6 @@ Singleton {
             return;
 
         const newSinkName = sink.description || sink.name || qsTr("Unknown Device");
-        const newSinkNameLower = (sink.description || sink.name || "").toLowerCase();
 
         if (previousSinkName && previousSinkName !== newSinkName && GlobalConfig.utilities.toasts.audioOutputChanged)
             Toaster.toast(qsTr("Audio output changed"), qsTr("Now using: %1").arg(newSinkName), "volume_up");
@@ -178,10 +177,6 @@ Singleton {
             Toaster.toast(qsTr("Audio input changed"), qsTr("Now using: %1").arg(newSourceName), "mic");
 
         previousSourceName = newSourceName;
-    }
-
-    onNodesChanged: {
-        updateHeadphonesIconState();
     }
 
     // Populate immediately: Pipewire.nodes may already be filled by the time this
