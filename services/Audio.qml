@@ -4,7 +4,6 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import Quickshell.Services.Pipewire
-import Quickshell.Io
 import Caelestia
 import Caelestia.Config
 import Caelestia.Services
@@ -14,7 +13,11 @@ Singleton {
 
     property string previousSinkName: ""
     property string previousSourceName: ""
-    property bool isHeadphonesIcon: false
+    readonly property string sinkName: sink?.description || sink?.name || ""
+    readonly property bool isHeadphonesIcon: {
+        const name = sinkName.toLowerCase();
+        return name.includes("headphone") || name.includes("headset");
+    }
 
     property list<PwNode> sinks: []
     property list<PwNode> sources: []
@@ -99,12 +102,6 @@ Singleton {
         }
     }
 
-    function updateHeadphonesIconState(): void {
-        const sinkName = (sink?.description || sink?.name || "").toLowerCase();
-        isHeadphonesIcon = sinkName.includes("headphone") || sinkName.includes("headset");
-    }
-
-
     function setStreamVolume(stream: PwNode, newVolume: real): void {
         if (stream?.ready && stream?.audio) {
             stream.audio.muted = false;
@@ -164,7 +161,6 @@ Singleton {
             Toaster.toast(qsTr("Audio output changed"), qsTr("Now using: %1").arg(newSinkName), "volume_up");
 
         previousSinkName = newSinkName;
-        updateHeadphonesIconState();
     }
 
     onSourceChanged: {
