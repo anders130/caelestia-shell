@@ -99,6 +99,23 @@ Slider {
             sourceComponent: root.wavy ? waveComp : lineComp
         }
 
+        StyledRect {
+            id: fullMark
+
+            readonly property real markX: (parent.width - handle.implicitWidth - handle.anchors.leftMargin) * ((1 - root.from) / (root.to - root.from))
+
+            visible: root.to - root.from > 1
+
+            anchors.verticalCenter: parent.verticalCenter
+            x: markX - implicitWidth / 2
+
+            implicitWidth: 1.5
+            implicitHeight: root.height - 4
+
+            radius: Tokens.rounding.full
+            color: markX < root.filledWidth ? root.bgColour : root.fgColour
+        }
+
         Component {
             id: lineComp
 
@@ -174,12 +191,12 @@ Slider {
         onPositionChanged: e => {
             dragMovement = (e.x - pressStartX) / width;
             if (root.interactionOnMove)
-                root.interaction(posBinding.value);
+                root.interaction(root.from + posBinding.value * (root.to - root.from));
         }
         onReleased: e => {
             const clickPos = e.x / width;
             const finalPos = mouse.dragMovement !== 0 ? posBinding.value : CUtils.clamp(clickPos, 0, 1);
-            root.interaction(finalPos);
+            root.interaction(root.from + finalPos * (root.to - root.from));
             widthBehavior.enabled = true;
             dragMovement = 0;
         }

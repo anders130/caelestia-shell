@@ -62,6 +62,7 @@ PageBase {
                 label: Audio.getStreamName(stream.modelData)
                 valueLabel: Math.round(value * 100) + "%"
                 value: stream.modelData?.audio?.volume ?? 0
+                max: GlobalConfig.services.maxVolume
                 enabled: !stream.modelData?.audio?.muted
                 onMoved: v => Audio.setStreamVolume(stream.modelData, v)
             }

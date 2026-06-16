@@ -28,6 +28,25 @@ Slider {
             color: Colours.palette.m3secondary
             radius: parent.radius
         }
+
+        StyledRect {
+            id: fullMark
+
+            readonly property real markY: (root.availableHeight - implicitHeight) * (1 - (1 - root.from) / (root.to - root.from))
+
+            visible: root.to - root.from > 1
+
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.leftMargin: 4
+            anchors.rightMargin: 4
+            y: markY
+
+            implicitHeight: 1.5
+
+            radius: Tokens.rounding.full
+            color: markY >= root.handle.y ? Colours.layer(Colours.palette.m3surfaceContainer, 2) : Colours.palette.m3secondary
+        }
     }
 
     handle: Item {

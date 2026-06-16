@@ -26,6 +26,7 @@ PageBase {
             label: qsTr("Output")
             valueLabel: Math.round(value * 100) + "%"
             value: Audio.volume
+            max: GlobalConfig.services.maxVolume
             enabled: !Audio.muted
             onMoved: v => Audio.setVolume(v)
         }
@@ -53,6 +54,7 @@ PageBase {
             label: qsTr("Input")
             valueLabel: Math.round(value * 100) + "%"
             value: Audio.sourceVolume
+            max: GlobalConfig.services.maxVolume
             enabled: !Audio.sourceMuted
             onMoved: v => Audio.setSourceVolume(v)
         }
