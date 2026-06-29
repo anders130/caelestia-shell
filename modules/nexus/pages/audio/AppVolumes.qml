@@ -65,6 +65,7 @@ PageBase {
                 max: GlobalConfig.services.maxVolume
                 enabled: !stream.modelData?.audio?.muted
                 onMoved: v => Audio.setStreamVolume(stream.modelData, v)
+                onReset: Audio.setStreamVolume(stream.modelData, 1)
             }
         }
     }

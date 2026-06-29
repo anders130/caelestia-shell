@@ -26,6 +26,7 @@ Slider {
     property real filledWidth
 
     signal interaction(v: real)
+    signal reset()
 
     Component.onCompleted: filledWidth = Qt.binding(() => (width - handle.implicitWidth - handle.anchors.leftMargin) * pos)
 
@@ -166,7 +167,7 @@ Slider {
         target: root
         property: "pos"
         value: CUtils.clamp(mouse.pressStartPos + mouse.dragMovement, 0, 1)
-        when: mouse.pressed
+        when: mouse.pressed && !mouse.rightPressed
     }
 
     MouseArea {
@@ -175,25 +176,38 @@ Slider {
         property real pressStartX
         property real pressStartPos
         property real dragMovement
+        property bool rightPressed: false
 
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
 
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
         preventStealing: true
         implicitHeight: handle.implicitHeight
 
         onPressed: e => {
+            if (e.button === Qt.RightButton) {
+                rightPressed = true;
+                root.reset();
+                return;
+            }
             widthBehavior.enabled = false;
             pressStartX = e.x;
             pressStartPos = root.visualPosition;
         }
         onPositionChanged: e => {
+            if (mouse.rightPressed)
+                return;
             dragMovement = (e.x - pressStartX) / width;
             if (root.interactionOnMove)
                 root.interaction(root.from + posBinding.value * (root.to - root.from));
         }
         onReleased: e => {
+            if (e.button === Qt.RightButton) {
+                rightPressed = false;
+                return;
+            }
             const clickPos = e.x / width;
             const finalPos = mouse.dragMovement !== 0 ? posBinding.value : CUtils.clamp(clickPos, 0, 1);
             root.interaction(root.from + finalPos * (root.to - root.from));

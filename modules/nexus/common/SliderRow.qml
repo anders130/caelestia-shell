@@ -18,6 +18,7 @@ ConnectedRect {
     property real max: 1
 
     signal moved(value: real)
+    signal reset()
 
     Layout.fillWidth: true
     implicitHeight: rowLayout.implicitHeight + rowLayout.anchors.margins + rowLayout.anchors.topMargin
@@ -84,6 +85,7 @@ ConnectedRect {
                     value: root.value
                     enabled: root.enabled
                     onInteraction: v => root.moved(v)
+                    onReset: root.reset()
                 }
             }
         }

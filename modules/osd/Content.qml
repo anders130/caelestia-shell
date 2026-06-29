@@ -50,6 +50,7 @@ Item {
                 value: root.volume
                 to: GlobalConfig.services.maxVolume
                 onMoved: Audio.setVolume(value)
+                onReset: Audio.setVolume(1)
             }
         }
 
@@ -75,6 +76,7 @@ Item {
                     value: root.sourceVolume
                     to: GlobalConfig.services.maxVolume
                     onMoved: Audio.setSourceVolume(value)
+                    onReset: Audio.setSourceVolume(1)
                 }
             }
         }

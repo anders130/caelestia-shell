@@ -96,6 +96,7 @@ Item {
                 to: GlobalConfig.services.maxVolume
                 value: Audio.volume
                 onInteraction: value => Audio.setVolume(value)
+                onReset: Audio.setVolume(1)
             }
         }
 

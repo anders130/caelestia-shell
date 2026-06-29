@@ -29,6 +29,7 @@ PageBase {
             max: GlobalConfig.services.maxVolume
             enabled: !Audio.muted
             onMoved: v => Audio.setVolume(v)
+            onReset: Audio.setVolume(1)
         }
 
         ToggleRow {
@@ -57,6 +58,7 @@ PageBase {
             max: GlobalConfig.services.maxVolume
             enabled: !Audio.sourceMuted
             onMoved: v => Audio.setSourceVolume(v)
+            onReset: Audio.setSourceVolume(1)
         }
 
         ToggleRow {

@@ -115,7 +115,15 @@ Slider {
         }
     }
 
+    signal reset()
+
     onPressedChanged: handle.moving = pressed
+
+    MouseArea {
+        anchors.fill: parent
+        acceptedButtons: Qt.RightButton
+        onClicked: root.reset()
+    }
 
     onValueChanged: {
         if (!initialized) {
