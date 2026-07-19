@@ -14,10 +14,6 @@ Scope {
             Toaster.toast(qsTr("Failed to parse config%1").arg(screen ? " for " + screen : ""), error, "settings_alert", Toast.Warning);
         }
 
-        function onSaveFailed(error: string, screen: string): void {
-            Toaster.toast(qsTr("Failed to save config%1").arg(screen ? " for " + screen : ""), error, "settings_alert", Toast.Error);
-        }
-
         function onUnknownOption(key: string, screen: string): void {
             Toaster.toast(qsTr("Unknown option in%1 config").arg(screen ? " " + screen : ""), key, "question_mark", Toast.Warning);
         }
